@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import "./globals.css";
 
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen font-sans">
         <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   );
