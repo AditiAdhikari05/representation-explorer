@@ -1,0 +1,23 @@
+{
+  "model": "simclr",
+  "epochs": [
+    {
+      "epoch": 0,
+      "points": [
+        { "x": 0.12, "y": -0.34, "label": 0, "imageUrl": "/images/sample_airplane.png" },
+        { "x": -0.45, "y": 0.18, "label": 3, "imageUrl": "/images/sample_cat.png" },
+        { "x": 0.51, "y": 0.22, "label": 5, "imageUrl": "/images/sample_dog.png" },
+        { "x": -0.12, "y": -0.42, "label": 1, "imageUrl": "/images/sample_auto.png" }
+      ]
+    },
+    {
+      "epoch": 200,
+      "points": [
+        { "x": 0.92, "y": 0.81, "label": 0, "imageUrl": "/images/sample_airplane.png" },
+        { "x": -0.78, "y": -0.65, "label": 3, "imageUrl": "/images/sample_cat.png" },
+        { "x": -0.72, "y": -0.59, "label": 5, "imageUrl": "/images/sample_dog.png" },
+        { "x": 0.85, "y": -0.71, "label": 1, "imageUrl": "/images/sample_auto.png" }
+      ]
+    }
+  ]
+}
