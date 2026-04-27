@@ -1,31 +1,33 @@
 "use client";
 
-import {
-  AutoImageProcessor,
-  AutoModelForImageClassification,
-  RawImage,
-  type PretrainedModelOptions,
-} from "@huggingface/transformers";
+// Note: transformers.js is loaded lazily inside loadVit() so webpack never
+// bundles it server-side (the package pulls onnxruntime-node native bindings
+// that break Vercel builds). On the client it lands as its own chunk on first
+// /attention visit and is cached thereafter.
 
 const MODEL_ID = "Xenova/vit-base-patch16-224";
 
-let cached: {
-  processor: Awaited<ReturnType<typeof AutoImageProcessor.from_pretrained>>;
-  model: Awaited<ReturnType<typeof AutoModelForImageClassification.from_pretrained>>;
-} | null = null;
+type Cached = {
+  processor: unknown;
+  model: unknown;
+};
 
-export async function loadVit(onProgress?: (p: number) => void) {
+let cached: Cached | null = null;
+
+export async function loadVit(onProgress?: (p: number) => void): Promise<Cached> {
   if (cached) return cached;
 
-  const opts: PretrainedModelOptions = {
+  const tx = await import("@huggingface/transformers");
+
+  const opts = {
     progress_callback: (data: { progress?: number }) => {
       if (typeof data.progress === "number") onProgress?.(data.progress);
     },
   };
 
   const [processor, model] = await Promise.all([
-    AutoImageProcessor.from_pretrained(MODEL_ID, opts),
-    AutoModelForImageClassification.from_pretrained(MODEL_ID, {
+    tx.AutoImageProcessor.from_pretrained(MODEL_ID, opts),
+    tx.AutoModelForImageClassification.from_pretrained(MODEL_ID, {
       ...opts,
       dtype: "fp32",
     }),
@@ -42,19 +44,25 @@ export type AttentionResult = {
 };
 
 export async function runAttention(image: Blob): Promise<AttentionResult> {
+  const tx = await import("@huggingface/transformers");
   const { processor, model } = await loadVit();
-  const raw = await RawImage.fromBlob(image);
-  const inputs = await processor(raw);
 
-  const output = await model(inputs, { output_attentions: true });
+  const raw = await tx.RawImage.fromBlob(image);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const inputs = await (processor as any)(raw);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const output = await (model as any)(inputs, { output_attentions: true });
 
   const logits = output.logits.data as Float32Array;
   let maxIdx = 0;
   for (let i = 1; i < logits.length; i++) if (logits[i] > logits[maxIdx]) maxIdx = i;
-  const id2label = (model.config as { id2label?: Record<number, string> }).id2label ?? {};
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const id2label = ((model as any).config?.id2label ?? {}) as Record<number, string>;
   const label = id2label[maxIdx] ?? `class_${maxIdx}`;
 
-  // Stub: real attention extraction lands in the next commit
+  // Stub attention grid until real extraction lands.
   const grid = Array.from({ length: 14 }, () =>
     Array.from({ length: 14 }, () => Math.random()),
   );
