@@ -10,7 +10,6 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@huggingface/transformers": "3.0.0",
     "next": "14.2.5",
     "plotly.js-dist-min": "2.34.0",
     "react": "18.3.1",
