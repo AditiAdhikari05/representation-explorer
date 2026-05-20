@@ -4,6 +4,8 @@
 [![tailwind](https://img.shields.io/badge/Tailwind-3-38bdf8)](https://tailwindcss.com)
 [![transformers.js](https://img.shields.io/badge/transformers.js-3-ff9d00)](https://huggingface.co/docs/transformers.js)
 
+**Live demo:** [representation-explorer.vercel.app](https://representation-explorer.vercel.app/)
+
 Interactive web app showing what a neural network *sees*. Upload an image,
 watch a UMAP of learned embeddings evolve across SimCLR pretraining epochs,
 and compare random vs supervised vs self-supervised init on the same data.
